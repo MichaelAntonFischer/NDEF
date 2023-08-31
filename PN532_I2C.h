@@ -1,5 +1,5 @@
 /**
- * @modified picospuch
+ * @modified MichaelAntonFischer
  */
 
 #ifndef __PN532_I2C_H__
@@ -11,7 +11,7 @@
 class PN532_I2C : public PN532Interface
 {
 public:
-    PN532_I2C(TwoWire &wire);
+    PN532_I2C(TwoWire &wire, uint8_t irq, uint8_t rst, uint8_t sda, uint8_t scl);
 
     void begin();
     void wakeup();
@@ -21,6 +21,7 @@ public:
 private:
     TwoWire *_wire;
     uint8_t command;
+    uint8_t _irq, _rst, _sda, _scl;  // Add these lines
 
     int8_t readAckFrame();
     int16_t getResponseLength(uint8_t buf[], uint8_t len, uint16_t timeout);

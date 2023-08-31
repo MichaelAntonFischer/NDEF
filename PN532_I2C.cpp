@@ -1,5 +1,5 @@
 /**
- * @modified picospuch
+ * @modified MichaelAntonFischer
  */
 
 #include "PN532_I2C.h"
@@ -8,15 +8,18 @@
 
 #define PN532_I2C_ADDRESS (0x48 >> 1)
 
-PN532_I2C::PN532_I2C(TwoWire &wire)
+PN532_I2C::PN532_I2C(TwoWire &wire, uint8_t irq, uint8_t rst, uint8_t sda, uint8_t scl)
 {
     _wire = &wire;
-    command = 0;
+    _irq = irq;
+    _rst = rst;
+    _sda = sda;
+    _scl = scl;
 }
 
 void PN532_I2C::begin()
 {
-    _wire->begin();
+    _wire->begin(_sda, _scl);
 }
 
 void PN532_I2C::wakeup()
