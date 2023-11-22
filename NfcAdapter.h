@@ -40,6 +40,7 @@ class NfcAdapter {
         PN532* shield;
         byte uid[7];  // Buffer to store the returned UID
         unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
+        boolean getATQAandSAK(byte *atqa, byte *sak);
         unsigned int guessTagType();
 };
 

@@ -194,8 +194,42 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     return success;
 }
 
+boolean NfcAdapter::getATQAandSAK(byte *atqa, byte *sak)
+{
+    // Buffer to store the response from the tag
+    byte response[20];
+    byte responseLength;
+
+    // Send the InListPassiveTarget command to the tag
+    shield->InListPassiveTarget();
+
+    // Get the response from the tag
+    responseLength = shield->getCommandResponse(response);
+
+    // Check the response length
+    if (responseLength < 20) {
+        return false;
+    }
+
+    // The ATQA is the first 2 bytes of the response
+    atqa[0] = response[0];
+    atqa[1] = response[1];
+
+    // The SAK is the third byte of the response
+    *sak = response[2];
+
+    return true;
+} 
+
 unsigned int NfcAdapter::guessTagType()
 {
+    byte atqa[2];
+    byte sak;
+    // Get ATQA and SAK from the tag
+    if (!getATQAandSAK(atqa, &sak)) {
+        return TAG_TYPE_UNKNOWN;
+    }
+
     // 4 byte id - Mifare Classic
     //  - ATQA 0x4 && SAK 0x8
     // 7 byte id
@@ -204,23 +238,23 @@ unsigned int NfcAdapter::guessTagType()
     //  - ATQA 0x344 && SAK 0x20 - NFC Forum Type 4
     //  - ATQA 0x424 && SAK 0x20 - NTAG424DNA
 
-    if (uidLength == 4 && ATQA == 0x4 && SAK == 0x8)
+    if (uidLength == 4 && atqa[0] == 0x4 && sak == 0x8)
     {
         return TAG_TYPE_MIFARE_CLASSIC;
     }
-    else if (uidLength == 7 && ATQA == 0x44 && SAK == 0x8)
+    else if (uidLength == 7 && atqa[0] == 0x44 && sak == 0x8)
     {
         return TAG_TYPE_MIFARE_CLASSIC;
     }
-    else if (uidLength == 7 && ATQA == 0x44 && SAK == 0x0)
+    else if (uidLength == 7 && atqa[0] == 0x44 && sak == 0x0)
     {
         return TAG_TYPE_2;
     }
-    else if (uidLength == 7 && ATQA == 0x344 && SAK == 0x20)
+    else if (uidLength == 7 && atqa[0] == 0x344 && sak == 0x20)
     {
         return TAG_TYPE_4;
     }
-    else if (uidLength == 7 && ATQA == 0x424 && SAK == 0x20)
+    else if (uidLength == 7 && atqa[0] == 0x424 && sak == 0x20)
     {
         return TAG_TYPE_NTAG424DNA;
     }
