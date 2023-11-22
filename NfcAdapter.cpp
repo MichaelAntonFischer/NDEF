@@ -194,25 +194,38 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     return success;
 }
 
-// TODO this should return a Driver MifareClassic, MifareUltralight, Type 4, Unknown
-// Guess Tag Type by looking at the ATQA and SAK values
-// Need to follow spec for Card Identification. Maybe AN1303, AN1305 and ???
 unsigned int NfcAdapter::guessTagType()
 {
-
     // 4 byte id - Mifare Classic
     //  - ATQA 0x4 && SAK 0x8
     // 7 byte id
     //  - ATQA 0x44 && SAK 0x8 - Mifare Classic
     //  - ATQA 0x44 && SAK 0x0 - Mifare Ultralight NFC Forum Type 2
     //  - ATQA 0x344 && SAK 0x20 - NFC Forum Type 4
+    //  - ATQA 0x424 && SAK 0x20 - NTAG424DNA
 
-    if (uidLength == 4)
+    if (uidLength == 4 && ATQA == 0x4 && SAK == 0x8)
     {
         return TAG_TYPE_MIFARE_CLASSIC;
     }
-    else
+    else if (uidLength == 7 && ATQA == 0x44 && SAK == 0x8)
+    {
+        return TAG_TYPE_MIFARE_CLASSIC;
+    }
+    else if (uidLength == 7 && ATQA == 0x44 && SAK == 0x0)
     {
         return TAG_TYPE_2;
+    }
+    else if (uidLength == 7 && ATQA == 0x344 && SAK == 0x20)
+    {
+        return TAG_TYPE_4;
+    }
+    else if (uidLength == 7 && ATQA == 0x424 && SAK == 0x20)
+    {
+        return TAG_TYPE_NTAG424DNA;
+    }
+    else
+    {
+        return TAG_TYPE_UNKNOWN;
     }
 }

@@ -15,6 +15,7 @@
 #define TAG_TYPE_2 (2)
 #define TAG_TYPE_3 (3)
 #define TAG_TYPE_4 (4)
+#define TAG_TYPE_NTAG424DNA (5)
 #define TAG_TYPE_UNKNOWN (99)
 
 #define IRQ   (2)
