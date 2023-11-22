@@ -7,6 +7,8 @@
 
 #ifdef ARDUINO_SAMD_VARIANT_COMPLIANCE
     #define SERIAL SerialUSB
+#else
+    #define SERIAL Serial
 #endif
 
 #ifdef DEBUG

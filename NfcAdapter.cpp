@@ -194,17 +194,13 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     return success;
 }
 
-boolean NfcAdapter::getATQAandSAK(byte *atqa, byte *sak)
+bool NfcAdapter::getATQAandSAK(byte *atqa, byte *sak)
 {
     // Buffer to store the response from the tag
     byte response[20];
-    byte responseLength;
 
     // Send the InListPassiveTarget command to the tag
-    shield->inListPassiveTarget();
-
-    // Get the response from the tag
-    responseLength = shield->getCommandResponse(response);
+    uint8_t responseLength = shield->inListPassiveTarget(response, sizeof(response));
 
     // Check the response length
     if (responseLength < 20) {
@@ -219,7 +215,7 @@ boolean NfcAdapter::getATQAandSAK(byte *atqa, byte *sak)
     *sak = response[2];
 
     return true;
-} 
+}
 
 unsigned int NfcAdapter::guessTagType()
 {
