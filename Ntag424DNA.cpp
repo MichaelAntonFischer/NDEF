@@ -69,12 +69,11 @@ boolean Ntag424DNA::authenticate(byte *uid, unsigned int uidLength)
         command[i + 1] = uid[i];
     }
 
-    // Send the command to the tag
-    _nfcShield->inDataExchange(command, sizeof(command));
+    // Buffer to store the response from the tag
+    byte response[20];
 
-    // The tag's response should be 16 bytes long
-    byte response[16];
-    int responseLength = _nfcShield->getCommandResponse(response);
+    // Send the command to the tag and get the response
+    int responseLength = _nfcShield->inDataExchange(command, sizeof(command), response, sizeof(response));
 
     // Check the response length
     if (responseLength != 16) {
