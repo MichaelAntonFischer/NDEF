@@ -59,5 +59,45 @@ boolean Ntag424DNA::authenticate(byte *uid, unsigned int uidLength)
         key[i] = staticKey[i];
     }
 
-    // The rest of the authenticate method...
+    // The command for the authentication
+    byte command[] = {
+        0x1A, // Command code for PWD_AUTH
+    };
+
+    // Append UID to the command
+    for (int i = 0; i < uidLength; i++) {
+        command[i + 1] = uid[i];
+    }
+
+    // Send the command to the tag
+    _nfcShield->inDataExchange(command, sizeof(command));
+
+    // The tag's response should be 16 bytes long
+    byte response[16];
+    int responseLength = _nfcShield->getCommandResponse(response);
+
+    // Check the response length
+    if (responseLength != 16) {
+        return false;
+    }
+
+    // The first 2 bytes of the response are the status code
+    // The remaining 14 bytes are the encrypted challenge
+    byte status[2];
+    byte encryptedChallenge[14];
+    memcpy(status, response, 2);
+    memcpy(encryptedChallenge, response + 2, 14);
+
+    // Decrypt the challenge using the key
+    byte decryptedChallenge[14];
+    AESLib aesLib;
+    aesLib.InvCipher(encryptedChallenge, key, decryptedChallenge);
+
+    // The decrypted challenge should match the original challenge
+    // This verifies that the tag has the correct key
+    if (memcmp(decryptedChallenge, command + 2, 14) != 0) {
+        return false;
+    }
+
+    return true;
 }
