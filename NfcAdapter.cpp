@@ -201,7 +201,7 @@ boolean NfcAdapter::getATQAandSAK(byte *atqa, byte *sak)
     byte responseLength;
 
     // Send the InListPassiveTarget command to the tag
-    shield->InListPassiveTarget();
+    shield->inListPassiveTarget();
 
     // Get the response from the tag
     responseLength = shield->getCommandResponse(response);

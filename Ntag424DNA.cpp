@@ -31,7 +31,7 @@ boolean Ntag424DNA::write(NdefMessage& ndefMessage, byte *uid, unsigned int uidL
 {
     // Buffer to store the NDEF message to be written to the tag
     uint8_t data[256]; // Adjust size as needed
-    ndefMessage.getEncoded(data);
+    ndefMessage.getEncodedSize(data);
 
     // Authenticate with the tag
     if (!authenticate(uid, uidLength)) {
