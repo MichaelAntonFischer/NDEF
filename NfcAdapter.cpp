@@ -194,25 +194,22 @@ boolean NfcAdapter::write(NdefMessage& ndefMessage)
     return success;
 }
 
-bool NfcAdapter::getATQAandSAK(byte *atqa, byte *sak)
+bool NfcAdapter::getATQA(byte *atqa)
 {
-    // Buffer to store the response from the tag
-    byte response[20];
-
     // Send the InListPassiveTarget command to the tag
-    uint8_t responseLength = shield->inListPassiveTarget(response, sizeof(response));
-
-    // Check the response length
-    if (responseLength < 20) {
+    if (!shield->inListPassiveTarget()) {
         return false;
     }
 
-    // The ATQA is the first 2 bytes of the response
-    atqa[0] = response[0];
-    atqa[1] = response[1];
+    // Get the response from the tag
+    uint32_t response = shield->getFirmwareVersion();
 
-    // The SAK is the third byte of the response
-    *sak = response[2];
+    // The ATQA is the first 2 bytes of the response
+    atqa[0] = (response >> 24) & 0xFF;
+    atqa[1] = (response >> 16) & 0xFF;
+
+    // The SAK is the last byte of the response, might be needed in future
+    //*sak = response & 0xFF;
 
     return true;
 }
@@ -220,9 +217,8 @@ bool NfcAdapter::getATQAandSAK(byte *atqa, byte *sak)
 unsigned int NfcAdapter::guessTagType()
 {
     byte atqa[2];
-    byte sak;
-    // Get ATQA and SAK from the tag
-    if (!getATQAandSAK(atqa, &sak)) {
+    // Get ATQA from the tag
+    if (!getATQA(atqa)) {
         return TAG_TYPE_UNKNOWN;
     }
 
@@ -234,23 +230,23 @@ unsigned int NfcAdapter::guessTagType()
     //  - ATQA 0x344 && SAK 0x20 - NFC Forum Type 4
     //  - ATQA 0x424 && SAK 0x20 - NTAG424DNA
 
-    if (uidLength == 4 && atqa[0] == 0x4 && sak == 0x8)
+    if (uidLength == 4 && atqa[0] == 0x4)
     {
         return TAG_TYPE_MIFARE_CLASSIC;
     }
-    else if (uidLength == 7 && atqa[0] == 0x44 && sak == 0x8)
+    else if (uidLength == 7 && atqa[0] == 0x44)
     {
         return TAG_TYPE_MIFARE_CLASSIC;
     }
-    else if (uidLength == 7 && atqa[0] == 0x44 && sak == 0x0)
+    else if (uidLength == 7 && atqa[0] == 0x44)
     {
         return TAG_TYPE_2;
     }
-    else if (uidLength == 7 && atqa[0] == 0x344 && sak == 0x20)
+    else if (uidLength == 7 && atqa[0] == 0x344)
     {
         return TAG_TYPE_4;
     }
-    else if (uidLength == 7 && atqa[0] == 0x424 && sak == 0x20)
+    else if (uidLength == 7 && atqa[0] == 0x424)
     {
         return TAG_TYPE_NTAG424DNA;
     }
