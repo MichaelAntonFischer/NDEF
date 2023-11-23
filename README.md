@@ -1,3 +1,6 @@
+# WARNING: The current commit is broken
+
+
 # NDEF Library for Arduino
 
 Read and Write NDEF messages on NFC Tags with Arduino.
