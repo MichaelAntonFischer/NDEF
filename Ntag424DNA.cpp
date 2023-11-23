@@ -88,9 +88,9 @@ boolean Ntag424DNA::authenticate(byte *uid, unsigned int uidLength)
     memcpy(encryptedChallenge, response + 2, 14);
 
     // Decrypt the challenge using the key
-    byte decryptedChallenge[14];
     AESLib aesLib;
-    aesLib.InvCipher(encryptedChallenge, key, decryptedChallenge);
+    uint8_t decryptedChallenge[16]; // Ensure the size matches the encrypted data
+    aesLib.decrypt64(decryptedChallenge, encryptedChallenge, key);
 
     // The decrypted challenge should match the original challenge
     // This verifies that the tag has the correct key
