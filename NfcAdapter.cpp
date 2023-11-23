@@ -112,7 +112,6 @@ boolean NfcAdapter::clean()
 
 }
 
-
 NfcTag NfcAdapter::read()
 {
     uint8_t type = guessTagType();
@@ -136,6 +135,14 @@ NfcTag NfcAdapter::read()
         MifareUltralight ultralight = MifareUltralight(*shield);
         return ultralight.read(uid, uidLength);
     }
+    else if (type == TAG_TYPE_NTAG424DNA) // Add support for NTAG424DNA
+    {
+        #ifdef NDEF_DEBUG
+        Serial.println(F("Reading NTAG424DNA"));
+        #endif
+        NTAG424DNA ntag424 = NTAG424DNA(*shield);
+        return ntag424.read(uid, uidLength);
+    }
     else if (type == TAG_TYPE_UNKNOWN)
     {
 #ifdef NDEF_USE_SERIAL
@@ -149,7 +156,6 @@ NfcTag NfcAdapter::read()
         // TODO should set type here
         return NfcTag(uid, uidLength);
     }
-
 }
 
 boolean NfcAdapter::write(NdefMessage& ndefMessage)
