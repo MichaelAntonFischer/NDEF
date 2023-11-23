@@ -40,7 +40,7 @@ boolean Ntag424DNA::write(NdefMessage& ndefMessage, byte *uid, unsigned int uidL
     }
 
     // Send the WRITE command to the tag
-    return _nfcShield->ntag2xx_WritePage(uid, uidLength, data);
+    return false; //_nfcShield->ntag2xx_WritePage(uid, uidLength, data); //TODO implement writing
 }
 
 boolean Ntag424DNA::authenticate(byte *uid, unsigned int uidLength)
@@ -73,7 +73,7 @@ boolean Ntag424DNA::authenticate(byte *uid, unsigned int uidLength)
     byte response[20];
 
     // Send the command to the tag and get the response
-    int responseLength = _nfcShield->inDataExchange(command, sizeof(command), response, sizeof(response));
+    int responseLength = _nfcShield->inDataExchange(command, sizeof(command), response, (uint8_t*)&responseLength);
 
     // Check the response length
     if (responseLength != 16) {
