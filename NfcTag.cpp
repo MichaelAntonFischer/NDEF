@@ -43,10 +43,7 @@ NfcTag::NfcTag(byte *uid, unsigned int uidLength, String tagType, const byte *nd
 
 NfcTag::~NfcTag()
 {
-    if (_ndefMessage) {
-        delete _ndefMessage;
-        _ndefMessage = NULL;
-    }
+    delete _ndefMessage;
 }
 
 NfcTag& NfcTag::operator=(const NfcTag& rhs)
