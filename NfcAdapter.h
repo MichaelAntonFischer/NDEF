@@ -15,7 +15,6 @@
 #define TAG_TYPE_2 (2)
 #define TAG_TYPE_3 (3)
 #define TAG_TYPE_4 (4)
-#define TAG_TYPE_NTAG424DNA (5)
 #define TAG_TYPE_UNKNOWN (99)
 
 #define IRQ   (2)
@@ -40,7 +39,6 @@ class NfcAdapter {
         PN532* shield;
         byte uid[7];  // Buffer to store the returned UID
         unsigned int uidLength; // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
-        boolean getATQAandSAK(byte *atqa, byte *sak);
         unsigned int guessTagType();
 };
 

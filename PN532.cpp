@@ -401,7 +401,6 @@ bool PN532::startPassiveTargetIDDetection(uint8_t cardbaudrate) {
     if (HAL(writeCommand)(pn532_packetbuffer, 3)) {
         return 0x0;  // command failed
     }
-    return true;
 }
 
 /**************************************************************************/
